@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                RÉSULTATS DE L'ANALYSE
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <form action="/export_results" method="post">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label for="export_format" class="form-label">Format d'export:</label>
+                                        <select name="export_format" id="export_format" class="form-select">
+                                            <option value="csv">CSV</option>
+                                            <option value="json">JSON</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label for="filename" class="form-label">Nom du fichier:</label>
+                                        <input type="text" class="form-control" id="filename" name="filename" value="export_{{ filters.format }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label class="form-label">&nbsp;</label>
+                                        <button type="submit" class="btn btn-primary w-100">EXPORTER</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs mb-3" id="resultTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#table" type="button" role="tab" aria-controls="table" aria-selected="true">Table</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="raw-tab" data-bs-toggle="tab" data-bs-target="#raw" type="button" role="tab" aria-controls="raw" aria-selected="false">Format Brut</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="resultTabsContent">
+                            <div class="tab-pane fade show active" id="table" role="tabpanel" aria-labelledby="table-tab">
+                                {% if table_data %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                {% for col in table_data.columns %}
+                                                <th>{{ col }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in table_data.data %}
+                                            <tr>
+                                                {% for col in table_data.columns %}
+                                                <td>{{ row[col] }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-warning">
+                                    Impossible d'afficher les données en format tableau. Consultez le format brut.
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="tab-pane fade" id="raw" role="tabpanel" aria-labelledby="raw-tab">
+                                <div class="results-box">{{ results|safe }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <a href="/" class="btn btn-primary">RETOUR AUX FILTRES</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

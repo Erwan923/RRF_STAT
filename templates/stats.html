@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                OPTIONS DE STATISTIQUES
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <form action="/show_full_stats" method="post">
+                            <button type="submit" class="btn btn-primary w-100 mb-3">STATISTIQUES COMPLÈTES</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form action="/count_by_criteria" method="post" class="mb-3">
+                            <div class="input-group">
+                                <select name="count_by" id="count_by" class="form-select">
+                                    <option value="">Sélectionner un critère</option>
+                                    {% for option in count_options %}
+                                    <option value="{{ option }}">{{ option }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-primary">COMPTER PAR CRITÈRE</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="alert alert-info">
+                    <strong>Note:</strong> Les statistiques sont calculées sur l'ensemble des données chargées. 
+                    Pour des statistiques sur un sous-ensemble, appliquez d'abord des filtres dans l'onglet RECHERCHE.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

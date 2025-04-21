@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                FICHIER CSV
+            </div>
+            <div class="card-body">
+                <form action="/load_csv" method="post" enctype="multipart/form-data">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="csv_path" class="form-label">Fichier CSV:</label>
+                            <select name="csv_path" id="csv_path" class="form-select">
+                                {% for file in csv_files %}
+                                <option value="{{ file }}" {% if file == default_csv %}selected{% endif %}>{{ file }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="csv_file" class="form-label">Ou télécharger un fichier:</label>
+                            <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">CHARGER</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="/apply_filters" method="post">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    FILTRES TACTIQUES
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Colonne 1 -->
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="severite" class="form-label">Sévérité:</label>
+                                <select name="severite" id="severite" class="form-select">
+                                    <option value=""></option>
+                                    {% for sev in severites %}
+                                    <option value="{{ sev }}">{{ sev }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="hote" class="form-label">Hôte:</label>
+                                <input type="text" class="form-control" id="hote" name="hote">
+                            </div>
+                            <div class="mb-3">
+                                <label for="hostname" class="form-label">Hostname:</label>
+                                <input type="text" class="form-control" id="hostname" name="hostname">
+                            </div>
+                            <div class="mb-3">
+                                <label for="hostname_short" class="form-label">Hostname court:</label>
+                                <input type="text" class="form-control" id="hostname_short" name="hostname_short">
+                            </div>
+                        </div>
+                        
+                        <!-- Colonne 2 -->
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="team" class="form-label">Team:</label>
+                                <input type="text" class="form-control" id="team" name="team">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namespace" class="form-label">Namespace:</label>
+                                <input type="text" class="form-control" id="namespace" name="namespace">
+                            </div>
+                            <div class="mb-3">
+                                <label for="etat" class="form-label">État:</label>
+                                <select name="etat" id="etat" class="form-select">
+                                    <option value=""></option>
+                                    {% for et in etats %}
+                                    <option value="{{ et }}">{{ et }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tag" class="form-label">Tag:</label>
+                                <input type="text" class="form-control" id="tag" name="tag" placeholder="clé=valeur">
+                            </div>
+                        </div>
+                        
+                        <!-- Colonne 3 -->
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="texte" class="form-label">Texte:</label>
+                                <input type="text" class="form-control" id="texte" name="texte">
+                            </div>
+                            <div class="mb-3">
+                                <label for="date_debut" class="form-label">Date début:</label>
+                                <input type="text" class="form-control" id="date_debut" name="date_debut" placeholder="DD/MM/YYYY">
+                            </div>
+                            <div class="mb-3">
+                                <label for="date_fin" class="form-label">Date fin:</label>
+                                <input type="text" class="form-control" id="date_fin" name="date_fin" placeholder="DD/MM/YYYY">
+                            </div>
+                            <div class="mb-3">
+                                <label for="duree_min" class="form-label">Durée min:</label>
+                                <input type="text" class="form-control" id="duree_min" name="duree_min" placeholder="ex: 1j, 5h, 30m">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    OPTIONS D'AFFICHAGE
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="format" class="form-label">Format:</label>
+                                <select name="format" id="format" class="form-select">
+                                    {% for fmt in formats %}
+                                    <option value="{{ fmt }}">{{ fmt }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-3">
+                                <label for="columns" class="form-label">Colonnes:</label>
+                                <input type="text" class="form-control" id="columns" name="columns" value="{{ default_columns }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-6">
+            <button type="submit" class="btn btn-primary w-100">APPLIQUER FILTRES</button>
+        </div>
+        <div class="col-6">
+            <button type="submit" class="btn btn-danger w-100" formaction="/reset_filters">RÉINITIALISER</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

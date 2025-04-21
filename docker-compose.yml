@@ -1,0 +1,14 @@
+services:
+  rrf-stat:
+    build: .
+    image: rrf-stat:latest
+    container_name: rrf-stat
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "8050:8050"
+    environment:
+      - FLASK_APP=web_gui_zabbix.py
+      - FLASK_DEBUG=0
+    restart: unless-stopped
+    command: python web_gui_zabbix.py

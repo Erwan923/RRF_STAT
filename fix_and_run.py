@@ -1,0 +1,295 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Quick fix and run script for RRF STAT
+This script patches the issues without modifying original files
+"""
+
+import os
+import sys
+import importlib.util
+import subprocess
+from tempfile import NamedTemporaryFile
+
+# Fix missing layout.html if needed
+if not os.path.exists(os.path.join("templates", "layout.html")):
+    print("Creating missing layout.html...")
+    
+    # Define the layout template content
+    layout_content = """<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RRF STAT - Système d'Analyse Tactique des Alertes</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bleu: {{ style.BLEU }};
+            --blanc: {{ style.BLANC }};
+            --rouge: {{ style.ROUGE }};
+            --noir: {{ style.NOIR }};
+            --gris-fonce: {{ style.GRIS_FONCE }};
+            --bleu-neon: {{ style.BLEU_NEON }};
+            --rouge-neon: {{ style.ROUGE_NEON }};
+        }
+        
+        body {
+            background-color: var(--noir);
+            color: var(--blanc);
+            font-family: 'Consolas', monospace;
+        }
+        
+        .navbar {
+            background-color: var(--gris-fonce);
+            border-bottom: 3px solid var(--rouge);
+        }
+        
+        .navbar-brand {
+            color: var(--blanc) !important;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--bleu-neon);
+        }
+        
+        .nav-link {
+            color: var(--blanc) !important;
+        }
+        
+        .nav-link.active {
+            background-color: var(--rouge) !important;
+            color: var(--blanc) !important;
+        }
+        
+        .card {
+            background-color: var(--gris-fonce);
+            border: 1px solid var(--bleu);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: var(--bleu);
+            color: var(--blanc);
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: var(--bleu);
+            border-color: var(--bleu-neon);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--bleu-neon);
+            border-color: var(--bleu);
+        }
+        
+        .btn-danger {
+            background-color: var(--rouge);
+            border-color: var(--rouge-neon);
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--rouge-neon);
+            border-color: var(--rouge);
+        }
+        
+        .form-control, .form-select {
+            background-color: var(--noir);
+            color: var(--blanc);
+            border: 1px solid var(--bleu);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--noir);
+            color: var(--blanc);
+            border-color: var(--bleu-neon);
+            box-shadow: 0 0 0 0.25rem rgba(0, 255, 255, 0.25);
+        }
+        
+        .table {
+            color: var(--blanc);
+        }
+        
+        .table thead th {
+            background-color: var(--bleu);
+            color: var(--blanc);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 85, 164, 0.2);
+        }
+        
+        .results-box {
+            background-color: var(--noir);
+            color: var(--blanc);
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border: 1px solid var(--bleu);
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--blanc) !important;
+            background-color: transparent;
+            border-color: var(--bleu);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--blanc) !important;
+            background-color: var(--bleu);
+            border-color: var(--bleu);
+        }
+        
+        /* Couleurs par sévérité */
+        .severity-disaster {
+            color: var(--rouge-neon) !important;
+        }
+        
+        .severity-high {
+            color: var(--rouge) !important;
+        }
+        
+        .severity-medium {
+            color: orange !important;
+        }
+        
+        .severity-warning {
+            color: yellow !important;
+        }
+        
+        .severity-info {
+            color: var(--bleu-neon) !important;
+        }
+        
+        /* Animation pour le titre "RRF STAT" */
+        .cyber-title {
+            position: relative;
+            display: inline-block;
+            letter-spacing: 2px;
+        }
+        
+        .cyber-title::after {
+            content: "RRF STAT";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--rouge-neon);
+            width: 100%;
+            height: 100%;
+            opacity: 0.5;
+            filter: blur(1.5px);
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        /* Flash messages */
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+            color: #28a745;
+        }
+        
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+        
+        .alert-error, .alert-danger {
+            background-color: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <span class="cyber-title">RRF STAT</span>
+                <small>Système d'Analyse Tactique des Alertes</small>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">RECHERCHE</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if '/stats' in request.path %}active{% endif %}" href="/stats">STATISTIQUES</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+    
+    <footer class="mt-5 mb-3 text-center">
+        <div class="container">
+            <p>RRF STAT &copy; République Française | <small>Système d'Analyse Tactique des Alertes</small></p>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>"""
+    
+    # Create the templates directory if needed
+    os.makedirs("templates", exist_ok=True)
+    
+    # Write the layout template
+    with open(os.path.join("templates", "layout.html"), "w") as f:
+        f.write(layout_content)
+    
+    print("layout.html created successfully.")
+
+# Create data directory if it doesn't exist
+os.makedirs("data", exist_ok=True)
+
+# Fix the display_data import issue using monkey patching
+print("Patching web_gui_zabbix.py imports...")
+from parse_zbx_problems import display_data
+
+# Import the web_gui_zabbix module
+spec = importlib.util.spec_from_file_location("web_gui_zabbix", "web_gui_zabbix.py")
+web_gui_zabbix = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(web_gui_zabbix)
+
+# Monkey patch the display_data function
+web_gui_zabbix.display_data = display_data
+
+# Set the Flask debug mode to False for security
+web_gui_zabbix.app.config['DEBUG'] = False
+
+# Launch the application
+print("Starting RRF STAT with fixed configuration...")
+print("Access the application at: http://localhost:8050")
+web_gui_zabbix.app.run(host='0.0.0.0', port=8050, debug=False)
