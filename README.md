@@ -1,13 +1,11 @@
 # RRF STAT - Système d'Analyse Tactique des Alertes
 
-Un outil d'analyse des alertes Zabbix avec interface graphique aux couleurs de la République Française, dans un style cyberpunk.
+Outil d'analyse des alertes Zabbix 
 
 ![Capture d'écran RRF STAT](https://example.com/screenshot.png)
 
 ## Fonctionnalités
 
-- Interface graphique intuitive aux couleurs bleu-blanc-rouge
-- Style cyberpunk moderne
 - Analyse des alertes Zabbix depuis un fichier CSV d'export
 - Filtrage flexible par multiples critères (sévérité, hôte, équipe, etc.)
 - Statistiques détaillées et visualisations
@@ -63,7 +61,7 @@ python gui_zabbix.py
 
 ### Instructions d'utilisation
 
-1. Chargez un fichier CSV d'export Zabbix (par défaut: zbx_problems_export.csv)
+1. Chargez un fichier CSV d'export Zabbix
 2. Utilisez les filtres pour affiner votre recherche
 3. Visualisez les résultats dans l'onglet RECHERCHE
 4. Consultez les statistiques dans l'onglet STATISTIQUES
@@ -122,11 +120,6 @@ Pour Windows et macOS, assurez-vous d'avoir un serveur X11 installé:
 - `requirements.txt` - Dépendances Python
 - `data/` - Dossier pour stocker les données exportées
 
-## Données d'exemple
-
-Des fichiers CSV d'exemple sont inclus pour tester l'application:
-- `zbx_problems_export.csv` - Export complet des alertes
-- `alertes.csv` - Export filtré d'exemple
 
 ## Licence
 
